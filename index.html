@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earthquake Magnitude Levels and Precautions</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #3498db;
+            --light: #f5f7fa;
+            --dark: #1a1a2e;
+            --text: #333;
+            --text-light: #7f8c8d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background-color: var(--light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Layout */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        /* Earthquake Cards */
+        .earthquake-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .level-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(50px);
+            position: relative;
+        }
+
+        .level-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .level-header {
+            padding: 1.5rem;
+            background: linear-gradient(to right, var(--primary), var(--dark));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .level-magnitude {
+            font-size: 1.5rem;
+            background: var(--secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .level-content {
+            padding: 2rem;
+        }
+
+        .level-content ul {
+            list-style-type: none;
+        }
+
+        .level-content li {
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .level-content li::before {
+            content: '•';
+            color: var(--secondary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--text-light), transparent);
+            margin: 1.5rem 0;
+            opacity: 0.3;
+        }
+
+        /* Danger Level Indicators */
+        .danger-level {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--secondary);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .danger-level h3 {
+            color: var(--secondary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--dark);
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Seismic Waves Animation */
+        .seismic-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDEyMCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PHBhdGggZD0iTTAsMzRjMTUwLDAsMTUwLDYwLDMwMCw2MHMxNTAtNjAsMzAwLTYwLDE1MCw2MCwzMDAsNjAsMTUwLTYwLDMwMC02MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMyIvPjwvc3ZnPg==') 0 bottom repeat-x;
+            animation: wave 15s linear infinite;
+            opacity: 0.5;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: 0.5s;
+            opacity: 0.3;
+        }
+
+        .wave:nth-child(3) {
+            animation-delay: 1s;
+            opacity: 0.1;
+        }
+
+        @keyframes wave {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Protection Overlay */
+        .protection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 999999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .level-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .level-title {
+                font-size: 1.5rem;
+            }
+            
+            .level-magnitude {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- Seismic Waves Background -->
+    <div class="seismic-wave">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <h1 class="animate__animated animate__fadeInDown">Content Script</h1>
+        <!-- <p class="animate__animated animate__fadeInUp">Understanding seismic activity and potential dangers</p> -->
+    </header>
+
+    <div class="container">
+        <!-- Micro Earthquakes -->
+        <div class="earthquake-levels">
+            <div class="level-card" id="micro">
+                <div class="level-header">
+                    <h2 class="level-title">Script</h2>
+                    <!-- <div class="level-magnitude">1.0 - 2.9</div> -->
+                </div>
+                <div class="level-content" style="font-size: 0.85rem;"> 
+
+                    <br>
+                    2025ရောက်နေပြီ အလုပ်ရှင်‌ တွေက <br>
+အခုထိ ဝန်ထမ်းတွေရဲ့ အခြေခံလစာကို <br>
+2သိန်းကျော်ပဲပေးနေတုန်းပဲလား။<br><br>
+
+
+
+
+ဒီ‌နေ့တော့  2020 က အခြေခံလစာနဲ့<br>
+ယနေ့ 2025 ခုနှစ်ရဲ့ အခြေခံလစာကို<br>
+နှိုင်းယှဉ်ကြည့်ရအောင်။
+<br><br>
+
+ကျနော်တို့ နိုင်ငံမှာ  <br>ဒေါ်လာဈေး၊ကုန်ဈေး၊ရွှေဈေး <br>အကုန်တတ်လာပေမယ့် မတတ်လာပဲတည်ငြိမ်နေတာဆိုလို့ <br> အခြေခံလစာ တစ်ခုပဲရှိပါတယ်။<br><br>
+
+
+တကယ်တော့ 2025မှာ <br>လစာ ၂သိန်းဝန်းကျင်ပဲရတဲ့သူတွေဟာ<br> အင်မတန်ကို နည်းလွန်းတဲ့အနေအထားပါ။
+<br><br>
+မြင်သာအောင် ပြောရရင် 2020 ခုနှစ်က <br>
+အခြေခံလစာဖြစ်တဲ့ ၂သိန်း ကျပ်ကို <br>ဒေါ်လာအနေနဲ့တွက်ကြည့်မယ်ဆိုရင် <br>တစ်လဝင်ငွေဟာ 
+$160 ဒေါ်လာအထိရှိခဲ့ပါတယ်။<br><br>
+
+ယနေ့ခေတ် 2025ရဲ့ အခြေခံလစာကို <br>
+ဒေါ်လာနဲ့တွက်ကြည့်မယ်ဆိုရင် 45 ဒေါ်လာပဲရှိပါတယ်။ စဉ်းစားကြည့်ပါ <br>တစ်လလုံးလုပ်မှ 45ဒေါ်လာဆိုတာ<br> ဘယ်လောက်အထိဝမ်းနည်းစရာကောင်းလဲ။<br><br>
+
+
+160‌ ဒေါ်လာဆိုတာ နိုင်ငံတကာနဲ့ယှဉ်ရင် <br>
+နည်းတယ်ဆိုပေမယ့် ယနေ့ခေတ် <br>
+မြန်မာ့ငွေဈေးနဲ့တွက်မယ်ဆိုရင်<br>
+မဆိုးလှတဲ့အနေအထားပါပဲ။<br><br>
+
+ဘာကြောင့်လဲဆိုရင် အဲ့ခေတ်အဲ့ခါမှာ <br>
+ဖုန်းဘေတစ်ထောင်ထည့်ပြီးရင် <br>
+တစ်ပါတ်စာPackage တွေဝယ်လို့ရခဲ့တယ်<br><br>
+
+ပိုက်ဆံတစ်သောင်းဆိုရင် ‌street food တွေ<br>
+တစ်ဝကြီးစားလို့ရလို့ရခဲ့တယ်။
+<br><br>
+ဒါ့အပြင် ဆီတစ်လီတာဟာလည်း <br>
+450ကျပ်ဝန်းကျင်ပဲရှိတဲ့အတွက် <br>
+တစ်ခါဆီထည့်ပြီး စိတ်ကြိုက်လည်လို့ရခဲ့တယ်။<br><br>
+
+ဒီလိုမျိုး အစအစအရာရာဈေးသက်သာပြီး<br>
+ဆီတစ်လီတာ ၅၀၀ ဝန်းကျင်လောက်ပဲရှိခဲ့တဲ့ <br>
+2020 ကလို အချိန်မှာတောင် 2သိန်းကျပ်ဆိုတာကို<br>
+‌လောက်ငှအောင်မနည်းသုံးခဲ့ရတဲ့သူတွေဟာ<br><br>
+
+အခုလို ဆီတစ်လီတာ 3000 အထက်မှာ<br>
+လစာ၂သိန်းနဲ့ ဘယ်လိုမျိုး ခက်ခက်ခဲခဲ<br>
+ချွေတာ စုဆောင်းပြီး <br>
+ဘယ်လောက်အထိစိတ်ပင်ပန်းရမလဲဆိုတာကို<br>
+တွေးကြည့်ရုံနဲ့တင် ကိုယ်ချင်းစာလို့ရပါတယ်။<br><br>
+
+
+လုပ်ငန်းရှင်‌တွေအနေနဲ့လည်း <br>
+ဒါကိုသဘောပေါက်နားလည်ပြီး <br>
+ကိုယ့်ရဲ့ဝန်ထမ်းတွေကို<br>
+လစာတိုးပေးသင့်တယ်လို့ထင်ပါတယ်။<br>
+ဝန်ထမ်းတွေကတော့ဘယ်လောက်ပဲခက်ခဲနေပါစေ<br>
+လစာတိုးပေးပါလို့တော့ တိုက်ရိုက်ပြောရဲမှာမဟုတ်ပါဘူး။ <br><br>
+
+တစ်ချို့အလုပ်ရှင်တွေကတော့ <br>
+ကျေနပ်ရင်လုပ်မကျေနပ်ရင်ထွက် <br>
+ဝန်ထမ်းအသစ်ရှာလိုက်မယ်ဆိုတဲ့<br>
+ဝန်ထမ်းတွေကို တန်ဖိုးမထားတတ်တဲ့ <br>
+အလုပ်ရှင်တွေကလည်း မြန်မာနိုင်ငံမှာ<br>
+အများကြီးကိုရှိပါတယ်။ <br>
+ဒီလိုမျိုး အလုပ်ရှင်တွေနဲ့တော့ <br>
+အတတ်နိုင်ဆုံးရှောင်သင့်ပါတယ်။<br><br>
+
+
+မိတ်ဆွေတို့ရော အခုရတဲ့ လစာတွေနဲ့<br>
+အဆင်မှပြေကြရဲ့လား။<br>
+အလိုက်သိတဲ့ အလုပ်ရှင်တွေကိုရော<br>
+ပိုင်ဆိုင်ထားကြပြီလား။<br><br>
+
+
+Comment အောက်မှာ<br>
+ဝင်ရောက်ဆွေးနွေးလို့ရပါတယ်။<br>
+
+နောက် video မှာ ပြန်တွေ့ကြတာပေါ့။<br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Protection Script
+        document.addEventListener('DOMContentLoaded', function() {
+            // Content Protection Functions
+            const protectionOverlay = document.getElementById('protectionOverlay');
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showProtectionMessage();
+            });
+            
+            // Disable keyboard shortcuts for saving, printing, etc.
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+S, Ctrl+P, etc.
+                if (e.ctrlKey && (e.keyCode === 83 || e.keyCode === 80 || e.keyCode === 85)) {
+                    e.preventDefault();
+                    showProtectionMessage();
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) { // Print Screen key
+                    e.preventDefault();
+                    showProtectionMessage();
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    showProtectionMessage();
+                }
+            });
+            
+            // Detect screen capture attempts (limited effectiveness)
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    showProtectionMessage();
+                }
+            });
+            
+            // Protection overlay function
+            function showProtectionMessage() {
+                protectionOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    protectionOverlay.style.opacity = '0';
+                }, 2000);
+            }
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                showProtectionMessage();
+            });
+            
+            // Disable drag and drop
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                showProtectionMessage();
+            });
+            
+            // Scroll animation for cards
+            const cards = document.querySelectorAll('.level-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            });
+
+            cards.forEach(card => {
+                observer.observe(card);
+                
+                // Add delay based on position
+                const index = Array.from(cards).indexOf(card);
+                card.style.transitionDelay = `${index * 0.1}s`;
+            });
+
+            // Add seismic effect when scrolling 
+            window.addEventListener('scroll', function() {
+                const major = document.getElementById('major');
+                const great = document.getElementById('great');
+                const rectMajor = major?.getBoundingClientRect();
+                const rectGreat = great?.getBoundingClientRect();
+                
+                if (rectMajor?.top < window.innerHeight && rectMajor?.bottom > 0) {
+                    document.body.style.animation = 'pulse 3s infinite';
+                } 
+                else if (rectGreat?.top < window.innerHeight && rectGreat?.bottom > 0) {
+                    document.body.style.animation = 'pulse 1.5s infinite';
+                }
+                else {
+                    document.body.style.animation = 'none';
+                }
+            });
+            
+            // Additional protection against iframe embedding
+            if (window.self !== window.top) {
+                document.body.innerHTML = '<h1 style="text-align:center;padding:50px;">This content cannot be embedded in iframes</h1>';
+            }
+            
+            // Protection against console access
+            console.log = function() {};
+            console.warn = function() {};
+            console.error = function() {};
+            
+            // Protection against DevTools opening
+            let devtools = /./;
+            devtools.toString = function() {
+                showProtectionMessage();
+                document.body.innerHTML = '<h1 style="text-align:center;padding:50px;">Developer tools are disabled</h1>';
+                return '';
+            };
+        });
+
+        // Additional protection against screenshot tools (limited effectiveness)
+        document.addEventListener('mousemove', function(e) {
+            if (e.screenX === 0 && e.screenY === 0) {
+                // Possible screenshot tool detection
+                document.body.innerHTML = '<h1 style="text-align:center;padding:50px;">Screenshot tools are not allowed</h1>';
+            }
+        });
+    </script>
+</body>
+</html>
